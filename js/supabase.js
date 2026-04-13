@@ -38,20 +38,33 @@ export async function callFunction(functionName, body) {
 
   if (!session) throw new Error('Usuário não autenticado.')
 
-  const response = await fetch(`${FUNCTIONS_URL}/${functionName}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`,
-      'apikey': SUPABASE_ANON_KEY,
-    },
-    body: JSON.stringify(body),
-  })
+  let response
+  try {
+    response = await fetch(`${FUNCTIONS_URL}/${functionName}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify(body),
+    })
+  } catch (fetchErr) {
+    const msg = (fetchErr.message || '').toLowerCase()
+    if (msg.includes('failed to fetch') || msg.includes('networkerror') || msg.includes('network'))
+      throw new Error('Não foi possível conectar ao servidor. Verifique sua conexão com a internet.')
+    throw new Error('Erro de rede: ' + fetchErr.message)
+  }
 
-  const result = await response.json()
+  let result
+  try {
+    result = await response.json()
+  } catch {
+    throw new Error(`Resposta inválida do servidor (função: ${functionName}).`)
+  }
 
   if (!response.ok) {
-    throw new Error(result.error || `Erro na função ${functionName}`)
+    throw new Error(result.error || `Erro ao executar a operação (${functionName}).`)
   }
 
   return result

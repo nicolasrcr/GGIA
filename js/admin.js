@@ -60,7 +60,7 @@ async function loadParticipants(search = '') {
   const { data, error } = await query
 
   if (error) {
-    tbody.innerHTML = `<tr><td colspan="8" class="error-cell">Erro ao carregar: ${error.message}</td></tr>`
+    tbody.innerHTML = `<tr><td colspan="8" class="error-cell">Erro ao carregar participantes. Tente novamente.</td></tr>`
     return
   }
 
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => closeModal('participant-modal'), 1500)
         await loadParticipants()
       } catch (err) {
-        showModalStatus(modal, 'Erro: ' + err.message, 'error')
+        showModalStatus(modal, 'Erro ao salvar: ' + err.message, 'error')
       }
     })
   }
@@ -236,7 +236,7 @@ window.toggleParticipant = async function(id, currentActive) {
     await loadParticipants()
     showToast(`Participante ${newStatus ? 'ativado' : 'inativado'} com sucesso.`)
   } catch (err) {
-    alert('Erro: ' + err.message)
+    alert('Erro ao atualizar participante: ' + err.message)
   }
 }
 
@@ -263,7 +263,7 @@ async function loadUsers() {
   ])
 
   if (profilesRes.error) {
-    tbody.innerHTML = `<tr><td colspan="6" class="error-cell">Erro: ${profilesRes.error.message}</td></tr>`
+    tbody.innerHTML = `<tr><td colspan="6" class="error-cell">Erro ao carregar usuários. Tente novamente.</td></tr>`
     return
   }
 
@@ -312,9 +312,9 @@ async function loadUsers() {
 window.changeUserRole = async function(userId, newRole) {
   try {
     await callFunction('admin-update-user-role', { target_user_id: userId, new_role: newRole })
-    showToast(`Papel atualizado para ${newRole}.`)
+    showToast(`Perfil atualizado para ${newRole === 'administrativo' ? 'Administrador' : 'Coordenador'}.`)
   } catch (err) {
-    alert('Erro: ' + err.message)
+    alert('Erro ao alterar perfil: ' + err.message)
     await loadUsers() // Reverter UI
   }
 }
@@ -328,12 +328,12 @@ window.toggleUser = async function(userId, currentStatus) {
       await callFunction('admin-delete-user', { target_user_id: userId, hard_delete: false })
     } else {
       const { error } = await supabase.from('profiles').update({ status: 'ativo' }).eq('id', userId)
-      if (error) throw error
+      if (error) throw new Error('Não foi possível reativar o usuário.')
     }
-    showToast(`Usuário ${newStatus === 'inativo' ? 'inativado' : 'ativado'}.`)
+    showToast(`Usuário ${newStatus === 'inativo' ? 'inativado' : 'ativado'} com sucesso.`)
     await loadUsers()
   } catch (err) {
-    alert('Erro: ' + err.message)
+    alert('Erro ao alterar status do usuário: ' + err.message)
   }
 }
 
@@ -342,10 +342,10 @@ window.deleteUser = async function(userId, nome) {
 
   try {
     await callFunction('admin-delete-user', { target_user_id: userId, hard_delete: true })
-    showToast('Usuário excluído.')
+    showToast('Usuário excluído com sucesso.')
     await loadUsers()
   } catch (err) {
-    alert('Erro: ' + err.message)
+    alert('Erro ao excluir usuário: ' + err.message)
   }
 }
 
@@ -388,7 +388,7 @@ function setupCreateUserForm() {
       // Mudar para aba de usuários
       document.querySelector('[data-tab="users"]')?.click()
     } catch (err) {
-      showMessage(msgEl, err.message, 'error')
+      showMessage(msgEl, 'Erro ao criar usuário: ' + err.message, 'error')
     } finally {
       btn.disabled = false
       btn.textContent = 'Criar usuário'

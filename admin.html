@@ -406,7 +406,7 @@
       .limit(100)
 
     if (error || !data) {
-      tbody.innerHTML = `<tr><td colspan="4" class="error-cell">Erro ao carregar: ${error?.message}</td></tr>`
+      tbody.innerHTML = `<tr><td colspan="4" class="error-cell">Erro ao carregar o log de ações. Tente novamente.</td></tr>`
       return
     }
 
