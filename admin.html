@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GGIA — Painel Administrativo</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<!-- ── Navbar ───────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="navbar__brand">
+    <div class="navbar__logo">G</div>
+    <div>
+      <span class="navbar__title">GGIA — Admin</span>
+      <span class="navbar__subtitle">Painel Administrativo</span>
+    </div>
+  </div>
+  <div class="navbar__actions">
+    <div class="navbar__user">
+      <span data-user-name>Carregando...</span><br>
+      <small data-user-role style="color:rgba(255,255,255,.6);"></small>
+    </div>
+    <a href="dashboard.html" class="btn btn--internal">Dashboard</a>
+    <button id="logout-btn" class="btn btn--ghost btn--sm">Sair</button>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+
+  <div class="content-header">
+    <h1>Painel Administrativo</h1>
+    <span style="font-size:.85rem; color:var(--gray-500);">Acesso exclusivo para administradores</span>
+  </div>
+
+  <!-- ── Abas ─────────────────────────────────────────────────── -->
+  <div class="tabs">
+    <button class="tab tab--active" data-tab="participants">Participantes</button>
+    <button class="tab" data-tab="users">Usuários internos</button>
+    <button class="tab" data-tab="create-user">Adicionar usuário</button>
+    <button class="tab" data-tab="audit">Log de ações</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Painel: Participantes
+  ═══════════════════════════════════════════════════════════ -->
+  <div data-panel="participants">
+    <div class="section-header">
+      <span class="section-title">Participantes cadastrados</span>
+      <input type="text" id="admin-search-participant" class="form-control"
+        style="max-width:280px;" placeholder="Buscar por nome ou e-mail..." />
+    </div>
+
+    <div class="table-wrapper">
+      <table id="admin-participants-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Titulação</th>
+            <th>Vínculo</th>
+            <th>Disponibilidade</th>
+            <th>Coord.</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="8" class="loading-cell">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Painel: Usuários internos
+  ═══════════════════════════════════════════════════════════ -->
+  <div data-panel="users" class="hidden">
+    <div class="section-header">
+      <span class="section-title">Usuários internos do sistema</span>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="admin-users-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Cargo</th>
+            <th>Perfil</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="6" class="loading-cell">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Painel: Criar usuário
+  ═══════════════════════════════════════════════════════════ -->
+  <div data-panel="create-user" class="hidden">
+    <div class="section-header">
+      <span class="section-title">Adicionar novo usuário interno</span>
+    </div>
+
+    <div class="form-section" style="max-width: 600px;">
+      <p style="font-size:.88rem; color:var(--gray-500); margin-bottom:1.25rem;">
+        Preencha os dados abaixo para criar um novo usuário com acesso ao dashboard e/ou painel administrativo.
+        O usuário receberá um link de confirmação por e-mail.
+      </p>
+
+      <form id="create-user-form" novalidate>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group" style="grid-column:1/-1;">
+            <label for="cu-nome">Nome completo <span class="required-mark">*</span></label>
+            <input type="text" id="cu-nome" name="nome" class="form-control"
+              placeholder="Nome do usuário" required />
+          </div>
+
+          <div class="form-group">
+            <label for="cu-email">E-mail <span class="required-mark">*</span></label>
+            <input type="email" id="cu-email" name="email" class="form-control"
+              placeholder="usuario@email.com" required />
+          </div>
+
+          <div class="form-group">
+            <label for="cu-telefone">Telefone / WhatsApp</label>
+            <input type="tel" id="cu-telefone" name="telefone" class="form-control"
+              placeholder="(61) 99999-9999" />
+          </div>
+
+          <div class="form-group">
+            <label for="cu-cargo">Cargo</label>
+            <input type="text" id="cu-cargo" name="cargo" class="form-control"
+              placeholder="Ex.: Pesquisador, Coordenador..." />
+          </div>
+
+          <div class="form-group">
+            <label for="cu-setor">Setor / Laboratório</label>
+            <input type="text" id="cu-setor" name="setor" class="form-control"
+              placeholder="Ex.: LabRisk, GGIA..." />
+          </div>
+
+          <div class="form-group" style="grid-column:1/-1;">
+            <label for="cu-role">Perfil de acesso <span class="required-mark">*</span></label>
+            <select id="cu-role" name="role" class="form-control" required>
+              <option value="">Selecione o perfil...</option>
+              <option value="coordenador">Coordenador — acessa dashboard, aplica filtros, exporta</option>
+              <option value="administrativo">Administrador — acesso completo, inclui painel admin</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="grid-column:1/-1;">
+            <label for="cu-password">
+              Senha inicial
+              <span style="font-size:.78rem; font-weight:400; color:var(--gray-500);">(opcional — se vazio, uma senha aleatória será gerada)</span>
+            </label>
+            <input type="password" id="cu-password" name="password" class="form-control"
+              placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
+          </div>
+        </div>
+
+        <div id="create-user-message" class="form-message hidden"></div>
+
+        <div style="margin-top:1.25rem;">
+          <button type="submit" class="btn btn--primary">Criar usuário</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       Painel: Audit log
+  ═══════════════════════════════════════════════════════════ -->
+  <div data-panel="audit" class="hidden">
+    <div class="section-header">
+      <span class="section-title">Log de ações administrativas</span>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="admin-audit-table">
+        <thead>
+          <tr>
+            <th>Data/Hora</th>
+            <th>Ator</th>
+            <th>Ação</th>
+            <th>Detalhes</th>
+          </tr>
+        </thead>
+        <tbody id="audit-tbody">
+          <tr><td colspan="4" class="loading-cell">Selecione esta aba para carregar o log.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- fim .page-wrapper -->
+
+<!-- ══════════════════════════════════════════════════════════
+     Modal de edição de participante
+═══════════════════════════════════════════════════════════ -->
+<div id="participant-modal" class="modal-overlay hidden">
+  <div class="modal__content">
+    <div class="modal__header">
+      <h3>Editar participante</h3>
+      <button class="modal__close" onclick="closeModal('participant-modal')">×</button>
+    </div>
+
+    <div class="modal__body">
+      <input type="hidden" name="participant_id" />
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Nome</label>
+          <input type="text" name="nome" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" name="email" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>WhatsApp</label>
+          <input type="tel" name="whatsapp" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Cidade / UF</label>
+          <input type="text" name="cidade_uf" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Vínculo institucional</label>
+          <input type="text" name="vinculo_institucional" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Atuação principal</label>
+          <input type="text" name="atuacao_principal" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Formação</label>
+          <input type="text" name="formacao" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Titulação</label>
+          <select name="titulacao" class="form-control">
+            <option value="">Selecione...</option>
+            <option>Graduação em andamento</option>
+            <option>Graduado</option>
+            <option>Especialista</option>
+            <option>Mestrando</option>
+            <option>Mestre</option>
+            <option>Doutorando</option>
+            <option>Doutor</option>
+            <option>Pós-Doutor</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Apresentação</label>
+          <textarea name="apresentacao" class="form-control" rows="2"></textarea>
+        </div>
+
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Temas de pesquisa</label>
+          <textarea name="areas_pesquisa" class="form-control" rows="2"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Link Lattes</label>
+          <input type="url" name="lattes_url" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>ORCID / LinkedIn</label>
+          <input type="url" name="perfil_url" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Nível de IA</label>
+          <select name="nivel_ia" class="form-control">
+            <option value="">Selecione...</option>
+            <option>Iniciante</option>
+            <option>Básico</option>
+            <option>Intermediário</option>
+            <option>Avançado</option>
+            <option>Especialista</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Disponibilidade</label>
+          <select name="disponibilidade" class="form-control">
+            <option value="">Selecione...</option>
+            <option>Até 2 horas por semana</option>
+            <option>2 a 5 horas por semana</option>
+            <option>5 a 10 horas por semana</option>
+            <option>10 a 15 horas por semana</option>
+            <option>Mais de 15 horas por semana</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Modalidade</label>
+          <select name="modalidade" class="form-control">
+            <option value="">Selecione...</option>
+            <option>Remota</option>
+            <option>Presencial</option>
+            <option>Híbrida</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Interesse em coordenar</label>
+          <select name="interesse_coordenacao" class="form-control">
+            <option value="nao">Não</option>
+            <option value="sim">Sim</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Como prefere contribuir</label>
+          <textarea name="como_contribuir" class="form-control" rows="2"></textarea>
+        </div>
+
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Melhor contribuição</label>
+          <textarea name="melhor_contribuicao" class="form-control" rows="2"></textarea>
+        </div>
+
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Competências extras</label>
+          <textarea name="competencias_extras" class="form-control" rows="2"></textarea>
+        </div>
+
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Produção acadêmica</label>
+          <textarea name="producao_academica" class="form-control" rows="2"></textarea>
+        </div>
+
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Observações</label>
+          <textarea name="observacoes" class="form-control" rows="2"></textarea>
+        </div>
+
+        <!-- Skills -->
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Áreas de expertise</label>
+          <div class="checkbox-group" id="modal-skills-container"></div>
+        </div>
+
+        <!-- Frentes -->
+        <div class="form-group" style="grid-column:1/-1;">
+          <label>Frentes de interesse</label>
+          <div class="checkbox-group" id="modal-fronts-container"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal__footer">
+      <div class="modal__status"></div>
+      <button class="btn btn--outline btn--sm" onclick="closeModal('participant-modal')">Cancelar</button>
+      <button id="save-participant-btn" class="btn btn--primary btn--sm">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Footer ────────────────────────────────────────────────── -->
+<footer class="page-footer">
+  <p>GGIA / LabRisk / UnB —
+    <a href="http://dgp.cnpq.br/dgp/espelhogrupo/825325" target="_blank" rel="noopener">
+      http://dgp.cnpq.br/dgp/espelhogrupo/825325
+    </a>
+  </p>
+</footer>
+
+<script type="module" src="js/admin.js"></script>
+<script type="module">
+  // Carregar audit log quando a aba for clicada
+  import { supabase } from './js/supabase.js'
+
+  document.querySelector('[data-tab="audit"]')?.addEventListener('click', async () => {
+    const tbody = document.getElementById('audit-tbody')
+    if (!tbody) return
+
+    tbody.innerHTML = '<tr><td colspan="4" class="loading-cell">Carregando...</td></tr>'
+
+    const { data, error } = await supabase
+      .from('audit_logs')
+      .select('created_at, actor_user_id, action, details')
+      .order('created_at', { ascending: false })
+      .limit(100)
+
+    if (error || !data) {
+      tbody.innerHTML = `<tr><td colspan="4" class="error-cell">Erro ao carregar: ${error?.message}</td></tr>`
+      return
+    }
+
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-cell">Nenhuma ação registrada.</td></tr>'
+      return
+    }
+
+    tbody.innerHTML = data.map(row => `
+      <tr>
+        <td style="white-space:nowrap; font-size:.82rem;">${new Date(row.created_at).toLocaleString('pt-BR')}</td>
+        <td style="font-size:.82rem; color:var(--gray-500);">${row.actor_user_id?.slice(0,8)}...</td>
+        <td><span class="badge badge--admin">${row.action}</span></td>
+        <td style="font-size:.8rem; color:var(--gray-500);">${JSON.stringify(row.details || {})}</td>
+      </tr>
+    `).join('')
+  })
+</script>
+
+</body>
+</html>

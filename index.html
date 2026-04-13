@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GGIA — Perfil do Comitê | Formulário de Participação</title>
+  <meta name="description" content="Formulário de mapeamento de perfil técnico e acadêmico dos participantes do Comitê GGIA / LabRisk / UnB." />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .form-hero {
+      background: linear-gradient(135deg, var(--blue-900) 0%, #1e1b4b 100%);
+      color: var(--white);
+      padding: 2rem 1.5rem 1.5rem;
+    }
+    .form-hero__inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .form-hero__text h1 { color: var(--white); font-size: 1.6rem; margin-bottom: .25rem; }
+    .form-hero__text p  { color: rgba(255,255,255,.8); font-size: .9rem; margin: 0; }
+    .form-hero__badge { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); border-radius: var(--radius-lg); padding: .75rem 1rem; font-size: .8rem; color: rgba(255,255,255,.85); text-align: center; min-width: 160px; }
+    .form-hero__badge strong { display: block; color: var(--gold-400); font-size: 1rem; }
+  </style>
+</head>
+<body>
+
+<!-- ── Navbar ───────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="navbar__brand">
+    <div class="navbar__logo">G</div>
+    <div>
+      <span class="navbar__title">GGIA — Comitê</span>
+      <span class="navbar__subtitle">LabRisk / UnB</span>
+    </div>
+  </div>
+  <div class="navbar__actions">
+    <a href="login.html" class="btn btn--internal">Acesso interno</a>
+  </div>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────── -->
+<div class="form-hero">
+  <div class="form-hero__inner">
+    <div class="form-hero__text">
+      <h1>Mapeamento de Perfil — Comitê GGIA</h1>
+      <p>Preencha o formulário para nos apresentar seu perfil acadêmico e técnico.</p>
+    </div>
+    <div class="form-hero__badge">
+      <strong>Grupo de Pesquisa</strong>
+      Certificado pelo CNPq<br>
+      LabRisk · UnB
+    </div>
+  </div>
+</div>
+
+<!-- ── Conteúdo principal ─────────────────────────────────────── -->
+<div class="page-layout">
+
+  <!-- FORMULÁRIO -->
+  <main>
+    <!-- Banner de rascunho salvo -->
+    <div id="draft-banner" class="draft-banner hidden">
+      <span>Encontramos um rascunho salvo anteriormente. Seus dados foram restaurados.</span>
+      <button type="button" class="btn btn--sm btn--outline" onclick="clearDraftBanner()">Limpar</button>
+    </div>
+
+    <!-- Barra de progresso -->
+    <div class="form-section" style="padding: 1rem 1.5rem;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:.5rem;">
+        <span style="font-size:.85rem; font-weight:600; color:var(--gray-700);">Progresso do preenchimento</span>
+        <span id="draft-indicator" class="draft-indicator"></span>
+      </div>
+      <div class="progress-container">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <div class="progress-info">
+        <span>Campos obrigatórios</span>
+        <span><strong id="progress-percent">0%</strong></span>
+      </div>
+    </div>
+
+    <form id="main-form" novalidate>
+
+      <!-- ── Seção 1: Identificação ─── -->
+      <div class="form-section">
+        <h2 class="form-section__title">
+          <span class="section-num">1</span> Identificação
+        </h2>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group" style="grid-column:1/-1;">
+            <label for="nome">Nome completo <span class="required-mark">*</span></label>
+            <input type="text" id="nome" name="nome" class="form-control"
+              placeholder="Seu nome completo" required autocomplete="name" />
+          </div>
+
+          <div class="form-group">
+            <label for="email">E-mail <span class="required-mark">*</span></label>
+            <input type="email" id="email" name="email" class="form-control"
+              placeholder="seu@email.com" required autocomplete="email" />
+          </div>
+
+          <div class="form-group">
+            <label for="whatsapp">WhatsApp</label>
+            <input type="tel" id="whatsapp" name="whatsapp" class="form-control"
+              placeholder="(61) 99999-9999" autocomplete="tel" />
+          </div>
+
+          <div class="form-group">
+            <label for="cidade_uf">Cidade / UF <span class="required-mark">*</span></label>
+            <input type="text" id="cidade_uf" name="cidade_uf" class="form-control"
+              placeholder="Brasília / DF" required />
+          </div>
+
+          <div class="form-group">
+            <label for="vinculo_institucional">Vínculo institucional</label>
+            <input type="text" id="vinculo_institucional" name="vinculo_institucional"
+              class="form-control" placeholder="Ex.: UnB, Governo Federal, setor privado..." />
+          </div>
+
+          <div class="form-group" style="grid-column:1/-1;">
+            <label for="atuacao_principal">Atuação principal atual <span class="required-mark">*</span></label>
+            <input type="text" id="atuacao_principal" name="atuacao_principal" class="form-control"
+              placeholder="Ex.: Pesquisadora, Analista de políticas, Desenvolvedor..." required />
+          </div>
+
+          <div class="form-group" style="grid-column:1/-1;">
+            <label for="apresentacao">Breve apresentação</label>
+            <textarea id="apresentacao" name="apresentacao" class="form-control" rows="3"
+              placeholder="Conte brevemente sobre você, sua trajetória e motivação para participar do comitê..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Seção 2: Perfil acadêmico ─── -->
+      <div class="form-section">
+        <h2 class="form-section__title">
+          <span class="section-num">2</span> Perfil acadêmico
+        </h2>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label for="formacao">Formação principal <span class="required-mark">*</span></label>
+            <input type="text" id="formacao" name="formacao" class="form-control"
+              placeholder="Ex.: Ciência da Computação, Direito..." required />
+          </div>
+
+          <div class="form-group">
+            <label for="titulacao">Titulação atual <span class="required-mark">*</span></label>
+            <select id="titulacao" name="titulacao" class="form-control" required>
+              <option value="">Selecione...</option>
+              <option>Graduação em andamento</option>
+              <option>Graduado</option>
+              <option>Especialista</option>
+              <option>Mestrando</option>
+              <option>Mestre</option>
+              <option>Doutorando</option>
+              <option>Doutor</option>
+              <option>Pós-Doutor</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="grid-column:1/-1;">
+            <label for="experiencia_academica">Experiência acadêmica predominante</label>
+            <select id="experiencia_academica" name="experiencia_academica" class="form-control">
+              <option value="">Selecione...</option>
+              <option>Docência em universidade pública</option>
+              <option>Docência em universidade privada</option>
+              <option>Pesquisa em instituição pública</option>
+              <option>Pesquisa em instituição privada / think tank</option>
+              <option>Consultor / assessor acadêmico</option>
+              <option>Profissional sem vínculo acadêmico formal</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="grid-column:1/-1;">
+            <label for="areas_pesquisa">Temas de pesquisa ou interesse acadêmico</label>
+            <textarea id="areas_pesquisa" name="areas_pesquisa" class="form-control" rows="2"
+              placeholder="Ex.: Governança de IA, regulação algorítmica, auditoria de sistemas..."></textarea>
+          </div>
+
+          <div class="form-group" style="grid-column:1/-1;">
+            <label for="producao_academica">Produção acadêmica ou experiências relevantes</label>
+            <textarea id="producao_academica" name="producao_academica" class="form-control" rows="2"
+              placeholder="Ex.: artigos publicados, relatórios técnicos, projetos realizados..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="lattes_url">Link do Currículo Lattes</label>
+            <input type="url" id="lattes_url" name="lattes_url" class="form-control"
+              placeholder="http://lattes.cnpq.br/..." />
+          </div>
+
+          <div class="form-group">
+            <label for="perfil_url">ORCID, LinkedIn ou outro link</label>
+            <input type="url" id="perfil_url" name="perfil_url" class="form-control"
+              placeholder="https://orcid.org/... ou https://linkedin.com/in/..." />
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Seção 3: Perfil técnico ─── -->
+      <div class="form-section">
+        <h2 class="form-section__title">
+          <span class="section-num">3</span> Perfil técnico e profissional
+        </h2>
+
+        <div class="form-group">
+          <label>Áreas em que possui experiência ou afinidade</label>
+          <p style="font-size:.82rem; color:var(--gray-500); margin-bottom:.5rem;">Selecione todas que se aplicam</p>
+          <div class="checkbox-group" id="skills-container">
+            <!-- Preenchido dinamicamente via JS -->
+            <label class="checkbox-label">
+              <input type="checkbox" name="skills" value="1">
+              <span>Carregando...</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="nivel_ia">Nível de familiaridade com IA e temas correlatos <span class="required-mark">*</span></label>
+          <div class="radio-group" id="nivel_ia_group">
+            <label class="radio-label">
+              <input type="radio" name="nivel_ia" value="Iniciante" required> Iniciante
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="nivel_ia" value="Básico"> Básico
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="nivel_ia" value="Intermediário"> Intermediário
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="nivel_ia" value="Avançado"> Avançado
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="nivel_ia" value="Especialista"> Especialista
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="experiencia_projetos">Experiência com projetos coletivos ou coordenação</label>
+          <select id="experiencia_projetos" name="experiencia_projetos" class="form-control">
+            <option value="">Selecione...</option>
+            <option value="Não tenho experiência nessa área">Não tenho experiência nessa área</option>
+            <option value="Participei como membro de grupos de trabalho">Participei como membro de grupos de trabalho</option>
+            <option value="Sim — coordenei projetos de pesquisa e grupos de trabalho">Sim — coordenei projetos de pesquisa e grupos de trabalho</option>
+            <option value="Sim — liderança de equipes em projetos corporativos">Sim — liderança de equipes em projetos corporativos</option>
+            <option value="Sim — coordenação de grupos interministeriais">Sim — coordenação de grupos interministeriais</option>
+            <option value="Sim — coordenação em contexto acadêmico">Sim — coordenação em contexto acadêmico</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="competencias_extras">Competências adicionais relevantes</label>
+          <textarea id="competencias_extras" name="competencias_extras" class="form-control" rows="2"
+            placeholder="Ex.: redação técnica, facilitação de grupos, metodologias ágeis, visualização de dados..."></textarea>
+        </div>
+      </div>
+
+      <!-- ── Seção 4: Interesse de contribuição ─── -->
+      <div class="form-section">
+        <h2 class="form-section__title">
+          <span class="section-num">4</span> Interesse de contribuição no comitê
+        </h2>
+
+        <div class="form-group">
+          <label>Frentes de interesse</label>
+          <p style="font-size:.82rem; color:var(--gray-500); margin-bottom:.5rem;">Selecione todas que se aplicam</p>
+          <div class="checkbox-group" id="fronts-container">
+            <!-- Preenchido dinamicamente via JS -->
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="como_contribuir">Como prefere contribuir</label>
+          <textarea id="como_contribuir" name="como_contribuir" class="form-control" rows="2"
+            placeholder="Descreva como você imagina sua contribuição ao comitê..."></textarea>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label for="disponibilidade">Disponibilidade média semanal <span class="required-mark">*</span></label>
+            <select id="disponibilidade" name="disponibilidade" class="form-control" required>
+              <option value="">Selecione...</option>
+              <option>Até 2 horas por semana</option>
+              <option>2 a 5 horas por semana</option>
+              <option>5 a 10 horas por semana</option>
+              <option>10 a 15 horas por semana</option>
+              <option>Mais de 15 horas por semana</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="modalidade">Modalidade preferencial de participação <span class="required-mark">*</span></label>
+            <select id="modalidade" name="modalidade" class="form-control" required>
+              <option value="">Selecione...</option>
+              <option>Remota</option>
+              <option>Presencial</option>
+              <option>Híbrida</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Interesse em facilitar uma frente <span class="required-mark">*</span></label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="interesse_coordenacao" value="sim" required> Sim, tenho interesse
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="interesse_coordenacao" value="nao"> Não no momento
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="melhor_contribuicao">Em que tipo de atividade você acredita que pode contribuir mais?</label>
+          <textarea id="melhor_contribuicao" name="melhor_contribuicao" class="form-control" rows="2"
+            placeholder="Ex.: revisão de textos, análise técnica, articulação com instituições, desenvolvimento..."></textarea>
+        </div>
+      </div>
+
+      <!-- ── Seção 5: Observações ─── -->
+      <div class="form-section">
+        <h2 class="form-section__title">
+          <span class="section-num">5</span> Observações finais
+        </h2>
+
+        <div class="form-group">
+          <label for="observacoes">Observações adicionais</label>
+          <textarea id="observacoes" name="observacoes" class="form-control" rows="3"
+            placeholder="Algo mais que gostaria de compartilhar..."></textarea>
+        </div>
+
+        <div class="form-group" style="margin-top:1.25rem;">
+          <label class="checkbox-label" style="align-items:flex-start; gap:.75rem; padding:.75rem 1rem; background:var(--blue-50); border:1.5px solid var(--blue-900); border-radius:var(--radius);">
+            <input type="checkbox" name="consentimento" id="consentimento"
+              style="margin-top:3px; width:18px; height:18px; accent-color:var(--blue-900); flex-shrink:0;" />
+            <span style="font-size:.88rem; color:var(--gray-700);">
+              <strong>Consentimento:</strong> Autorizo o GGIA / LabRisk / UnB a armazenar e utilizar
+              as informações fornecidas neste formulário para fins de organização do comitê,
+              pesquisa e comunicação interna. Os dados não serão compartilhados com terceiros
+              sem meu consentimento. <span style="color:var(--wine-500);">*</span>
+            </span>
+          </label>
+        </div>
+
+        <!-- Mensagem de erro/sucesso -->
+        <div id="form-message" class="form-message hidden"></div>
+
+        <!-- Botão de envio -->
+        <div style="margin-top:1.5rem; text-align:center;">
+          <button type="submit" id="submit-btn" class="btn btn--primary btn--lg">
+            Enviar formulário
+          </button>
+          <p style="font-size:.8rem; color:var(--gray-500); margin-top:.75rem;">
+            Seus dados são salvos automaticamente enquanto você preenche.
+          </p>
+        </div>
+      </div>
+
+    </form><!-- fim #main-form -->
+
+    <!-- Overlay de sucesso (oculto por padrão) -->
+    <div id="success-overlay" class="success-overlay hidden">
+      <div class="success-overlay__icon">✓</div>
+      <h2>Formulário enviado com sucesso!</h2>
+      <p>Obrigado por participar do mapeamento do Comitê GGIA.<br>
+         Em breve nossa equipe entrará em contato.</p>
+      <p style="margin-top:1rem; font-size:.85rem;">
+        Grupo de Pesquisa GGIA / LabRisk / UnB<br>
+        <a href="http://dgp.cnpq.br/dgp/espelhogrupo/825325" target="_blank" rel="noopener">
+          http://dgp.cnpq.br/dgp/espelhogrupo/825325
+        </a>
+      </p>
+    </div>
+
+  </main>
+
+  <!-- ── Sidebar ────────────────────────────────────────────── -->
+  <aside class="sidebar">
+
+    <!-- Progresso resumido -->
+    <div class="sidebar-card">
+      <div class="sidebar-card__title">Seu progresso</div>
+      <div class="progress-container" style="height:10px; margin-bottom:.5rem;">
+        <div id="progress-bar-side" class="progress-bar"></div>
+      </div>
+      <p style="text-align:center; font-size:.85rem;">
+        <strong id="progress-percent-side">0%</strong> preenchido
+      </p>
+    </div>
+
+    <!-- Informações institucionais -->
+    <div class="sidebar-card">
+      <div class="sidebar-card__title">Sobre o GGIA</div>
+      <span class="institution-badge">CNPq Certificado</span>
+      <p>O <strong>GGIA</strong> é um grupo de pesquisa certificado pelo CNPq, vinculado ao
+         <strong>LabRisk / UnB</strong>.</p>
+      <p>Atua em governança e gestão de Inteligência Artificial, com foco em:</p>
+      <ul style="font-size:.85rem; color:var(--gray-700); padding-left:1.2rem; margin-bottom:.75rem;">
+        <li>Governança de IA</li>
+        <li>Gestão de riscos algorítmicos</li>
+        <li>Auditoria e conformidade</li>
+        <li>Transparência algorítmica</li>
+        <li>Políticas públicas e regulação</li>
+        <li>Pesquisa aplicada</li>
+      </ul>
+      <p style="font-size:.78rem;">
+        <a href="http://dgp.cnpq.br/dgp/espelhogrupo/825325" target="_blank" rel="noopener">
+          Diretório de Grupos de Pesquisa CNPq ↗
+        </a>
+      </p>
+    </div>
+
+    <!-- Orientações de preenchimento -->
+    <div class="sidebar-card">
+      <div class="sidebar-card__title">Como preencher</div>
+      <p>Preencha com calma. Seu rascunho é salvo automaticamente a cada campo.</p>
+      <p>Os campos marcados com <span style="color:var(--wine-500); font-weight:700;">*</span> são obrigatórios.</p>
+      <p>Ao final, clique em <strong>Enviar formulário</strong> para registrar sua participação.</p>
+    </div>
+
+  </aside>
+</div>
+
+<!-- ── Footer ────────────────────────────────────────────────── -->
+<footer class="page-footer">
+  <p>
+    Grupo de Pesquisa GGIA / LabRisk / Universidade de Brasília (UnB) —
+    <a href="http://dgp.cnpq.br/dgp/espelhogrupo/825325" target="_blank" rel="noopener">
+      http://dgp.cnpq.br/dgp/espelhogrupo/825325
+    </a>
+  </p>
+</footer>
+
+<!-- ── Scripts ───────────────────────────────────────────────── -->
+<script type="module" src="js/form.js"></script>
+<script>
+  // Sincronizar a segunda barra de progresso na sidebar
+  const primaryBar  = document.getElementById('progress-bar')
+  const sideBar     = document.getElementById('progress-bar-side')
+  const primaryPct  = document.getElementById('progress-percent')
+  const sidePct     = document.getElementById('progress-percent-side')
+
+  const obs = new MutationObserver(() => {
+    if (sideBar && primaryBar) sideBar.style.width = primaryBar.style.width
+    if (sidePct && primaryPct) sidePct.textContent  = primaryPct.textContent
+  })
+  if (primaryBar) obs.observe(primaryBar, { attributes: true, attributeFilter: ['style'] })
+  if (primaryPct) obs.observe(primaryPct, { childList: true, subtree: true })
+
+  // Botão "Limpar rascunho" no banner
+  function clearDraftBanner() {
+    localStorage.removeItem('ggia_form_draft')
+    document.getElementById('draft-banner')?.classList.add('hidden')
+  }
+</script>
+
+</body>
+</html>

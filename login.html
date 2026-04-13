@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GGIA — Acesso interno</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<div class="login-page">
+  <div class="login-card">
+
+    <div class="login-card__logo">
+      <div class="login-logo-circle">G</div>
+      <h1>GGIA — Comitê</h1>
+      <p>LabRisk / Universidade de Brasília</p>
+    </div>
+
+    <form id="login-form" novalidate>
+      <div class="form-group">
+        <label for="email">E-mail institucional</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
+          placeholder="seu@email.com"
+          required
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-control"
+          placeholder="••••••••"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+
+      <div id="login-message" class="form-message hidden"></div>
+
+      <button type="submit" id="login-btn" class="btn btn--primary btn--lg" style="width:100%; margin-top:.75rem;">
+        Entrar
+      </button>
+    </form>
+
+    <p style="text-align:center; margin-top:1.25rem; font-size:.85rem;">
+      <a href="index.html">← Voltar ao formulário público</a>
+    </p>
+
+    <p style="text-align:center; margin-top:2rem; font-size:.75rem; color:var(--gray-500);">
+      Acesso restrito a membros internos do Comitê GGIA.<br>
+      Problemas? Contate o administrador do sistema.
+    </p>
+  </div>
+</div>
+
+<script type="module">
+  import { login, getUser, getUserRole } from './js/auth.js'
+
+  // Se já está logado, redirecionar
+  (async () => {
+    const user = await getUser()
+    if (user) {
+      const role = await getUserRole()
+      window.location.href = role === 'administrativo' ? 'admin.html' : 'dashboard.html'
+    }
+  })()
+
+  const form    = document.getElementById('login-form')
+  const btn     = document.getElementById('login-btn')
+  const msgEl   = document.getElementById('login-message')
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    const email    = document.getElementById('email').value.trim()
+    const password = document.getElementById('password').value
+
+    if (!email || !password) {
+      showMsg('Preencha e-mail e senha.', 'error')
+      return
+    }
+
+    btn.disabled    = true
+    btn.textContent = 'Entrando...'
+    clearMsg()
+
+    const result = await login(email, password)
+
+    if (result.error) {
+      showMsg(friendlyError(result.error), 'error')
+      btn.disabled    = false
+      btn.textContent = 'Entrar'
+      return
+    }
+
+    // Redirecionar conforme papel
+    window.location.href = result.role === 'administrativo' ? 'admin.html' : 'dashboard.html'
+  })
+
+  function showMsg(text, type) {
+    msgEl.textContent = text
+    msgEl.className   = `form-message form-message--${type}`
+    msgEl.classList.remove('hidden')
+  }
+
+  function clearMsg() {
+    msgEl.textContent = ''
+    msgEl.className   = 'form-message hidden'
+  }
+
+  function friendlyError(msg) {
+    if (msg.toLowerCase().includes('invalid login')) return 'E-mail ou senha incorretos.'
+    if (msg.toLowerCase().includes('email not confirmed')) return 'E-mail não confirmado. Verifique sua caixa de entrada.'
+    if (msg.toLowerCase().includes('network')) return 'Erro de conexão. Verifique sua internet.'
+    return 'Erro ao entrar: ' + msg
+  }
+</script>
+
+</body>
+</html>

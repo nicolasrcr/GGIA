@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GGIA — Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- SheetJS (Excel) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- jsPDF + AutoTable (PDF) -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+<!-- ── Navbar ───────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="navbar__brand">
+    <div class="navbar__logo">G</div>
+    <div>
+      <span class="navbar__title">GGIA — Dashboard</span>
+      <span class="navbar__subtitle">LabRisk / UnB</span>
+    </div>
+  </div>
+  <div class="navbar__actions">
+    <div class="navbar__user">
+      <span data-user-name>Carregando...</span><br>
+      <small data-user-role style="color:rgba(255,255,255,.6);"></small>
+    </div>
+    <a href="admin.html" class="btn btn--internal" data-admin-only>Admin</a>
+    <button id="logout-btn" class="btn btn--ghost btn--sm">Sair</button>
+  </div>
+</nav>
+
+<!-- ── Conteúdo ──────────────────────────────────────────────── -->
+<div class="page-wrapper">
+
+  <!-- Cabeçalho da seção -->
+  <div class="content-header">
+    <h1>Painel de Dados — Comitê GGIA</h1>
+    <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+      <button id="export-excel" class="btn btn--gold btn--sm">
+        ↓ Exportar Excel
+      </button>
+      <button id="export-pdf" class="btn btn--wine btn--sm">
+        ↓ Exportar PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- ── KPIs ─────────────────────────────────────────────────── -->
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card__label">Total de participantes</div>
+      <div id="kpi-total" class="card__value">—</div>
+    </div>
+    <div class="card card--gold">
+      <div class="card__label">Titulações distintas</div>
+      <div id="kpi-titulacoes" class="card__value">—</div>
+    </div>
+    <div class="card card--wine">
+      <div class="card__label">Vínculos distintos</div>
+      <div id="kpi-vinculos" class="card__value">—</div>
+    </div>
+    <div class="card card--green">
+      <div class="card__label">Interesse em coordenar</div>
+      <div id="kpi-coordenadores" class="card__value">—</div>
+    </div>
+  </div>
+
+  <!-- ── Gráficos ────────────────────────────────────────────── -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-card__title">Por titulação</div>
+      <div class="chart-container">
+        <canvas id="chart-titulacao"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card__title">Disponibilidade semanal</div>
+      <div class="chart-container">
+        <canvas id="chart-disponibilidade"></canvas>
+      </div>
+    </div>
+    <div class="chart-card" style="grid-column: span 2;">
+      <div class="chart-card__title">Áreas de expertise</div>
+      <div class="chart-container" style="height:260px;">
+        <canvas id="chart-skills"></canvas>
+      </div>
+    </div>
+    <div class="chart-card" style="grid-column: span 2;">
+      <div class="chart-card__title">Frentes de interesse</div>
+      <div class="chart-container" style="height:240px;">
+        <canvas id="chart-frentes"></canvas>
+      </div>
+    </div>
+    <div class="chart-card" style="grid-column: 1 / -1;">
+      <div class="chart-card__title">Novos cadastros por mês</div>
+      <div class="chart-container" style="height:200px;">
+        <canvas id="chart-cadastros-mes"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tabela de participantes ─────────────────────────────── -->
+  <div style="margin-top:1.5rem;">
+    <div class="section-header">
+      <span class="section-title">Listagem de participantes</span>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-bar">
+      <div class="filter-group" style="flex:2; min-width:220px;">
+        <label>Buscar por nome ou e-mail</label>
+        <input type="text" id="filter-search" class="form-control"
+          placeholder="Nome ou e-mail..." />
+      </div>
+      <div class="filter-group">
+        <label>Titulação</label>
+        <select id="filter-titulacao" class="form-control">
+          <option value="">Todas</option>
+          <option>Graduação em andamento</option>
+          <option>Graduado</option>
+          <option>Especialista</option>
+          <option>Mestrando</option>
+          <option>Mestre</option>
+          <option>Doutorando</option>
+          <option>Doutor</option>
+          <option>Pós-Doutor</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Disponibilidade</label>
+        <select id="filter-disponibilidade" class="form-control">
+          <option value="">Todas</option>
+          <option>Até 2 horas por semana</option>
+          <option>2 a 5 horas por semana</option>
+          <option>5 a 10 horas por semana</option>
+          <option>10 a 15 horas por semana</option>
+          <option>Mais de 15 horas por semana</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Coordenação</label>
+        <select id="filter-coordenacao" class="form-control">
+          <option value="">Todos</option>
+          <option value="sim">Com interesse</option>
+          <option value="nao">Sem interesse</option>
+        </select>
+      </div>
+      <div style="align-self:flex-end;">
+        <button id="filter-clear" class="btn btn--outline btn--sm">Limpar filtros</button>
+      </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="table-wrapper">
+      <table id="participants-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Formação</th>
+            <th>Titulação</th>
+            <th>Vínculo institucional</th>
+            <th>Disponibilidade</th>
+            <th>Coordenação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="7" class="loading-cell">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p id="table-empty" class="hidden" style="text-align:center; color:var(--gray-500); padding:2rem;">
+      Nenhum participante encontrado com os filtros aplicados.
+    </p>
+  </div>
+
+</div><!-- fim .page-wrapper -->
+
+<!-- ── Footer ────────────────────────────────────────────────── -->
+<footer class="page-footer">
+  <p>GGIA / LabRisk / UnB —
+    <a href="http://dgp.cnpq.br/dgp/espelhogrupo/825325" target="_blank" rel="noopener">
+      http://dgp.cnpq.br/dgp/espelhogrupo/825325
+    </a>
+  </p>
+</footer>
+
+<script type="module" src="js/dashboard.js"></script>
+
+</body>
+</html>
