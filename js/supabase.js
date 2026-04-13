@@ -9,8 +9,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 // ── Configuração ─────────────────────────────────────────────
 // Edite estes dois valores após criar seu projeto no Supabase.
-const SUPABASE_URL      = 'https://SEU_PROJECT_REF.supabase.co'
-const SUPABASE_ANON_KEY = 'SUA_ANON_KEY_PUBLICA'
+const SUPABASE_URL      = 'https://odmqfjwclfkfczsgwtum.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kbXFmandjbGZrZmN6c2d3dHVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMjYxNDIsImV4cCI6MjA5MTYwMjE0Mn0.u8HERCvVYe33ee-YIvFixVp2SW29-Zspz_3vgiP2OXQ'
 
 // URLs das Edge Functions (derivadas automaticamente)
 export const FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`

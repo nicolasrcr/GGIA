@@ -84,9 +84,10 @@ Em **Settings → API**:
 Edite `js/supabase.js` e substitua os placeholders:
 
 ```js
-const SUPABASE_URL      = 'https://SEU_PROJECT_REF.supabase.co'
-const SUPABASE_ANON_KEY = 'SUA_ANON_KEY_PUBLICA'
+const SUPABASE_URL      = 'https://odmqfjwclfkfczsgwtum.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'  // já configurado
 ```
+> Já configurado no arquivo `js/supabase.js`.
 
 ### 1.5 Deploy das Edge Functions
 
