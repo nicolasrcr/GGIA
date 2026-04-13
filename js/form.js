@@ -249,12 +249,14 @@ async function submitForm(form) {
       return
     }
 
-    // 1. Inserir participante
-    const { data: participant, error: participantError } = await supabase
+    // Gerar UUID no cliente — evita a necessidade de SELECT após INSERT
+    // (anon não tem permissão de SELECT na tabela participants)
+    const participantId = crypto.randomUUID()
+
+    // 1. Inserir participante (sem .select() para não exigir permissão de leitura)
+    const { error: participantError } = await supabase
       .from('participants')
-      .insert(participantData)
-      .select('id')
-      .single()
+      .insert({ id: participantId, ...participantData })
 
     if (participantError) {
       if (participantError.code === '23505') {
@@ -265,8 +267,6 @@ async function submitForm(form) {
       setLoading(btn, false)
       return
     }
-
-    const participantId = participant.id
 
     // 2. Inserir skills
     if (skillIds.length > 0) {
