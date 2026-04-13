@@ -5,7 +5,9 @@
 // NUNCA coloque a service_role key aqui.
 // ============================================================
 
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+// Supabase é carregado via <script> UMD nos HTMLs — window.supabase estará disponível.
+// NÃO usar ESM import do CDN aqui: evita falhas em browsers com restrições de módulo.
+const { createClient } = window.supabase
 
 // ── Configuração ─────────────────────────────────────────────
 // Edite estes dois valores após criar seu projeto no Supabase.

@@ -5,8 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GGIA — Acesso interno</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <!-- Supabase UMD — deve ser carregado ANTES dos scripts type="module" -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
+<!-- Aviso: arquivo aberto diretamente (file://) não funciona -->
+<div id="file-protocol-warning" style="display:none; background:#7f1d1d; color:#fff; text-align:center; padding:.75rem 1rem; font-size:.88rem; position:fixed; top:0; left:0; right:0; z-index:9999;">
+  ⚠️ <strong>Atenção:</strong> Este arquivo está sendo aberto diretamente no navegador (<code>file://</code>).
+  O login <strong>não funcionará assim</strong>. Você precisa servir o projeto por um servidor HTTP.
+  <br>Use o GitHub Pages, ou localmente: <code>npx serve .</code> ou <code>python -m http.server 8000</code>
+</div>
+<script>
+  if (window.location.protocol === 'file:') {
+    document.getElementById('file-protocol-warning').style.display = 'block'
+    document.body.style.paddingTop = '80px'
+  }
+</script>
 
 <div class="login-page">
   <div class="login-card">
@@ -118,9 +133,16 @@
   }
 
   function friendlyError(msg) {
-    if (msg.toLowerCase().includes('invalid login')) return 'E-mail ou senha incorretos.'
-    if (msg.toLowerCase().includes('email not confirmed')) return 'E-mail não confirmado. Verifique sua caixa de entrada.'
-    if (msg.toLowerCase().includes('network')) return 'Erro de conexão. Verifique sua internet.'
+    const m = msg.toLowerCase()
+    if (m.includes('invalid login') || m.includes('invalid credentials'))
+      return 'E-mail ou senha incorretos.'
+    if (m.includes('email not confirmed'))
+      return 'E-mail não confirmado. Verifique sua caixa de entrada.'
+    if (m.includes('failed to fetch') || m.includes('networkerror') || m.includes('network')) {
+      if (window.location.protocol === 'file:')
+        return 'Arquivo aberto via file://. Sirva o projeto por um servidor HTTP (GitHub Pages ou "npx serve .").'
+      return 'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.'
+    }
     return 'Erro ao entrar: ' + msg
   }
 </script>
