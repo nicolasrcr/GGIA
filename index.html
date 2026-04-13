@@ -60,6 +60,15 @@
   </div>
 </div>
 
+<!-- Banner institucional mobile (oculto em desktop, visível em phones) -->
+<div class="mobile-info-banner">
+  <span class="institution-badge" style="margin-right:.5rem;">CNPq Certificado</span>
+  <span style="font-size:.82rem; color:var(--gray-700);">
+    <strong>GGIA / LabRisk / UnB</strong> — Governança e gestão de Inteligência Artificial.
+    Preencha os campos abaixo para registrar seu perfil no comitê.
+  </span>
+</div>
+
 <!-- ── Conteúdo principal ─────────────────────────────────────── -->
 <div class="page-layout">
 
@@ -94,8 +103,8 @@
           <span class="section-num">1</span> Identificação
         </h2>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-          <div class="form-group" style="grid-column:1/-1;">
+        <div class="form-grid">
+          <div class="form-group" class="span-2">
             <label for="nome">Nome completo <span class="required-mark">*</span></label>
             <input type="text" id="nome" name="nome" class="form-control"
               placeholder="Seu nome completo" required autocomplete="name" />
@@ -125,13 +134,13 @@
               class="form-control" placeholder="Ex.: UnB, Governo Federal, setor privado..." />
           </div>
 
-          <div class="form-group" style="grid-column:1/-1;">
+          <div class="form-group" class="span-2">
             <label for="atuacao_principal">Atuação principal atual <span class="required-mark">*</span></label>
             <input type="text" id="atuacao_principal" name="atuacao_principal" class="form-control"
               placeholder="Ex.: Pesquisadora, Analista de políticas, Desenvolvedor..." required />
           </div>
 
-          <div class="form-group" style="grid-column:1/-1;">
+          <div class="form-group" class="span-2">
             <label for="apresentacao">Breve apresentação</label>
             <textarea id="apresentacao" name="apresentacao" class="form-control" rows="3"
               placeholder="Conte brevemente sobre você, sua trajetória e motivação para participar do comitê..."></textarea>
@@ -145,7 +154,7 @@
           <span class="section-num">2</span> Perfil acadêmico
         </h2>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="form-grid">
           <div class="form-group">
             <label for="formacao">Formação principal <span class="required-mark">*</span></label>
             <input type="text" id="formacao" name="formacao" class="form-control"
@@ -167,7 +176,7 @@
             </select>
           </div>
 
-          <div class="form-group" style="grid-column:1/-1;">
+          <div class="form-group" class="span-2">
             <label for="experiencia_academica">Experiência acadêmica predominante</label>
             <select id="experiencia_academica" name="experiencia_academica" class="form-control">
               <option value="">Selecione...</option>
@@ -180,13 +189,13 @@
             </select>
           </div>
 
-          <div class="form-group" style="grid-column:1/-1;">
+          <div class="form-group" class="span-2">
             <label for="areas_pesquisa">Temas de pesquisa ou interesse acadêmico</label>
             <textarea id="areas_pesquisa" name="areas_pesquisa" class="form-control" rows="2"
               placeholder="Ex.: Governança de IA, regulação algorítmica, auditoria de sistemas..."></textarea>
           </div>
 
-          <div class="form-group" style="grid-column:1/-1;">
+          <div class="form-group" class="span-2">
             <label for="producao_academica">Produção acadêmica ou experiências relevantes</label>
             <textarea id="producao_academica" name="producao_academica" class="form-control" rows="2"
               placeholder="Ex.: artigos publicados, relatórios técnicos, projetos realizados..."></textarea>
@@ -285,7 +294,7 @@
             placeholder="Descreva como você imagina sua contribuição ao comitê..."></textarea>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="form-grid">
           <div class="form-group">
             <label for="disponibilidade">Disponibilidade média semanal <span class="required-mark">*</span></label>
             <select id="disponibilidade" name="disponibilidade" class="form-control" required>
