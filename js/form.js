@@ -54,9 +54,30 @@ function setupProgressBar() {
   if (!form || !bar) return
 
   const updateProgress = () => {
-    const required = form.querySelectorAll('[required]')
-    const filled   = [...required].filter(el => el.value.trim() !== '').length
-    const percent  = required.length ? Math.round((filled / required.length) * 100) : 0
+    // Coletar campos obrigatórios, desduplicando grupos de radio pelo name
+    const allRequired = form.querySelectorAll('[required]')
+    const seenRadioNames = new Set()
+    const fields = []
+
+    allRequired.forEach(el => {
+      if (el.type === 'radio') {
+        if (!seenRadioNames.has(el.name)) {
+          seenRadioNames.add(el.name)
+          fields.push({ type: 'radio', name: el.name })
+        }
+      } else {
+        fields.push({ type: el.type || 'text', el })
+      }
+    })
+
+    const filled = fields.filter(f => {
+      if (f.type === 'radio') {
+        return form.querySelector(`input[name="${f.name}"]:checked`) !== null
+      }
+      return f.el.value.trim() !== ''
+    }).length
+
+    const percent = fields.length ? Math.round((filled / fields.length) * 100) : 0
     bar.style.width = percent + '%'
     if (pct) pct.textContent = percent + '%'
   }
