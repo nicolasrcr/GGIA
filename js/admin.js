@@ -257,23 +257,27 @@ async function loadUsers() {
 
   tbody.innerHTML = '<tr><td colspan="6" class="loading-cell">Carregando...</td></tr>'
 
-  const { data, error } = await supabase
-    .from('profiles')
-    .select(`id, nome, email, cargo, setor, status, user_roles(role)`)
-    .order('nome')
+  const [profilesRes, rolesRes] = await Promise.all([
+    supabase.from('profiles').select('id, nome, email, cargo, setor, status').order('nome'),
+    supabase.from('user_roles').select('user_id, role'),
+  ])
 
-  if (error) {
-    tbody.innerHTML = `<tr><td colspan="6" class="error-cell">Erro: ${error.message}</td></tr>`
+  if (profilesRes.error) {
+    tbody.innerHTML = `<tr><td colspan="6" class="error-cell">Erro: ${profilesRes.error.message}</td></tr>`
     return
   }
 
-  if (!data || data.length === 0) {
+  const data = profilesRes.data || []
+  const rolesMap = {}
+  ;(rolesRes.data || []).forEach(r => { rolesMap[r.user_id] = r.role })
+
+  if (data.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6" class="empty-cell">Nenhum usuário encontrado.</td></tr>'
     return
   }
 
   tbody.innerHTML = data.map(u => {
-    const role = u.user_roles?.[0]?.role || '—'
+    const role = rolesMap[u.id] || '—'
     return `
       <tr class="${u.status === 'inativo' ? 'row--inactive' : ''}">
         <td>${esc(u.nome || '—')}</td>
