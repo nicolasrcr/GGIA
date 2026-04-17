@@ -15,10 +15,10 @@ EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 -- 3. Função updated_at
-CREATE OR REPLACE FUNCTION set_updated_at()
+CREATE OR REPLACE FUNCTION public.set_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SET search_path = '';
 
 -- 4. Tabelas catálogo
 CREATE TABLE IF NOT EXISTS skills (id SERIAL PRIMARY KEY, nome TEXT NOT NULL UNIQUE);
@@ -127,15 +127,15 @@ CREATE INDEX IF NOT EXISTS idx_al_action  ON audit_logs(action);
 CREATE INDEX IF NOT EXISTS idx_al_created ON audit_logs(created_at DESC);
 
 -- 9. Funções RLS (APÓS user_roles existir)
-CREATE OR REPLACE FUNCTION get_user_role(uid UUID)
+CREATE OR REPLACE FUNCTION public.get_user_role(uid UUID)
 RETURNS TEXT AS $$
-  SELECT role::TEXT FROM user_roles WHERE user_id = uid LIMIT 1;
-$$ LANGUAGE sql SECURITY DEFINER STABLE;
+  SELECT role::TEXT FROM public.user_roles WHERE user_id = uid LIMIT 1;
+$$ LANGUAGE sql SECURITY DEFINER STABLE SET search_path = '';
 
-CREATE OR REPLACE FUNCTION current_user_role()
+CREATE OR REPLACE FUNCTION public.current_user_role()
 RETURNS TEXT AS $$
-  SELECT get_user_role(auth.uid());
-$$ LANGUAGE sql SECURITY DEFINER STABLE;
+  SELECT public.get_user_role(auth.uid());
+$$ LANGUAGE sql SECURITY DEFINER STABLE SET search_path = '';
 
 -- 10. RLS
 ALTER TABLE participants       ENABLE ROW LEVEL SECURITY;
