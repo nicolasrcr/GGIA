@@ -28,44 +28,27 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 
 // ── Helper: chamar Edge Function autenticada ──────────────────
 /**
- * Chama uma Edge Function com o token JWT do usuário atual.
+ * Chama uma Edge Function usando supabase.functions.invoke(),
+ * que gerencia token JWT, refresh e erros automaticamente.
  * @param {string} functionName  Nome da função (ex: 'admin-create-user')
  * @param {object} body          Payload JSON
  * @returns {Promise<object>}    Resposta parseada
  */
 export async function callFunction(functionName, body) {
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data, error } = await supabase.functions.invoke(functionName, { body })
 
-  if (!session) throw new Error('Usuário não autenticado.')
-
-  let response
-  try {
-    response = await fetch(`${FUNCTIONS_URL}/${functionName}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`,
-        'apikey': SUPABASE_ANON_KEY,
-      },
-      body: JSON.stringify(body),
-    })
-  } catch (fetchErr) {
-    const msg = (fetchErr.message || '').toLowerCase()
+  if (error) {
+    const msg = (error.message || '').toLowerCase()
     if (msg.includes('failed to fetch') || msg.includes('networkerror') || msg.includes('network'))
       throw new Error('Não foi possível conectar ao servidor. Verifique sua conexão com a internet.')
-    throw new Error('Erro de rede: ' + fetchErr.message)
+    // FunctionsHttpError carrega a resposta; tenta extrair campo error
+    if (error.context) {
+      let detail
+      try { detail = await error.context.json() } catch { /* ignore */ }
+      if (detail?.error) throw new Error(detail.error)
+    }
+    throw new Error(error.message || `Erro ao executar a operação (${functionName}).`)
   }
 
-  let result
-  try {
-    result = await response.json()
-  } catch {
-    throw new Error(`Resposta inválida do servidor (função: ${functionName}).`)
-  }
-
-  if (!response.ok) {
-    throw new Error(result.error || `Erro ao executar a operação (${functionName}).`)
-  }
-
-  return result
+  return data
 }
