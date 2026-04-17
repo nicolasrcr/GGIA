@@ -11,8 +11,8 @@ const { createClient } = window.supabase
 
 // ── Configuração ─────────────────────────────────────────────
 // Edite estes dois valores após criar seu projeto no Supabase.
-const SUPABASE_URL      = 'https://odmqfjwclfkfczsgwtum.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kbXFmandjbGZrZmN6c2d3dHVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMjYxNDIsImV4cCI6MjA5MTYwMjE0Mn0.u8HERCvVYe33ee-YIvFixVp2SW29-Zspz_3vgiP2OXQ'
+const SUPABASE_URL      = 'https://labdvjkcngcpmugryznn.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxhYmR2amtjbmdjcG11Z3J5em5uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjc0MzYsImV4cCI6MjA5MTk0MzQzNn0.er_2ceLid1zMO_eciuM_h6oTXijEF2QrsVf__Nlyyk4'
 
 // URLs das Edge Functions (derivadas automaticamente)
 export const FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`
