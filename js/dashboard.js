@@ -43,6 +43,7 @@ const filters = {
 }
 
 let allParticipants = []
+let _drillCache = null   // cache para drill-down (todos os participantes, sem paginação)
 
 // ── KPIs ──────────────────────────────────────────────────────
 async function loadKPIs() {
@@ -267,7 +268,9 @@ async function loadChartSkills() {
   }, {
     indexAxis: 'y',
     plugins: { legend: { display: false }, datalabels: { display: false } },
-    scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+    scales: { x: { beginAtZero: true, ticks: { precision: 0 } } },
+    onClick: (e, els, chart) => { if (els.length) handleBarClick(chart.data.labels[els[0].index], 'skill') },
+    onHover:  (e, els) => { e.native.target.style.cursor = els.length ? 'pointer' : 'default' },
   })
 }
 
@@ -289,7 +292,9 @@ async function loadChartFrentes() {
   }, {
     indexAxis: 'y',
     plugins: { legend: { display: false }, datalabels: { display: false } },
-    scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+    scales: { x: { beginAtZero: true, ticks: { precision: 0 } } },
+    onClick: (e, els, chart) => { if (els.length) handleBarClick(chart.data.labels[els[0].index], 'frente') },
+    onHover:  (e, els) => { e.native.target.style.cursor = els.length ? 'pointer' : 'default' },
   })
 }
 
@@ -771,6 +776,93 @@ if(D.meses.length)new Chart(document.getElementById('rpt-ms'),{
 });
 <` + `/script>
 </body></html>`
+}
+
+// ── Drill-down: clique nas barras ─────────────────────────────
+async function handleBarClick(categoria, tipo) {
+  // Busca e cacheia todos os participantes uma única vez
+  if (!_drillCache) {
+    const { data } = await supabase
+      .from('v_participantes_resumo')
+      .select('id, nome, email, titulacao, vinculo_institucional, disponibilidade, skills, frentes')
+      .eq('active', true)
+      .order('nome')
+    _drillCache = data || []
+  }
+
+  const campo = tipo === 'skill' ? 'skills' : 'frentes'
+  const resultados = _drillCache.filter(p => {
+    const items = (p[campo] || '').split(', ').map(s => s.trim().toLowerCase())
+    return items.includes(categoria.toLowerCase())
+  })
+
+  showDrilldownPanel(categoria, tipo, resultados)
+}
+
+function showDrilldownPanel(categoria, tipo, participantes) {
+  document.getElementById('_dd-panel')?.remove()
+
+  const tipoLabel = tipo === 'skill' ? 'Área de Expertise' : 'Frente de Interesse'
+  const cor       = tipo === 'skill' ? '#1e3a8a' : '#7f1d1d'
+
+  const rows = participantes.length
+    ? participantes.map(p => `
+        <tr>
+          <td>${p.nome || '—'}</td>
+          <td>${p.titulacao || '—'}</td>
+          <td>${p.vinculo_institucional || '—'}</td>
+          <td>${p.disponibilidade || '—'}</td>
+          <td><a href="mailto:${p.email}" style="color:${cor}">${p.email}</a></td>
+        </tr>`).join('')
+    : `<tr><td colspan="5" style="text-align:center;padding:20px;color:#6b7280">Nenhum participante encontrado</td></tr>`
+
+  // Injeta estilos uma única vez
+  if (!document.getElementById('_dd-styles')) {
+    const s = document.createElement('style')
+    s.id = '_dd-styles'
+    s.textContent = `
+      #_dd-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1200;cursor:pointer}
+      #_dd-panel{position:fixed;right:0;top:0;bottom:0;width:min(600px,96vw);background:#fff;z-index:1201;display:flex;flex-direction:column;box-shadow:-6px 0 28px rgba(0,0,0,.18);animation:_dd-in .22s ease}
+      @keyframes _dd-in{from{transform:translateX(100%)}to{transform:translateX(0)}}
+      ._dd-hdr{color:#fff;padding:20px 20px 16px;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0}
+      ._dd-tipo{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.65);font-weight:700;display:block;margin-bottom:3px}
+      ._dd-titulo{font-size:1.1rem;font-weight:800;margin:0 0 6px}
+      ._dd-cnt{display:inline-block;background:rgba(255,255,255,.2);border-radius:999px;padding:2px 10px;font-size:.76rem}
+      ._dd-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem;line-height:1;flex-shrink:0}
+      ._dd-close:hover{background:rgba(255,255,255,.3)}
+      ._dd-body{flex:1;overflow-y:auto;padding:0}
+      ._dd-tbl{width:100%;border-collapse:collapse;font-size:.84rem}
+      ._dd-tbl thead th{background:#f1f5f9;color:#374151;font-weight:700;font-size:.73rem;text-transform:uppercase;letter-spacing:.04em;padding:10px 12px;text-align:left;border-bottom:2px solid #e2e8f0;position:sticky;top:0;z-index:1}
+      ._dd-tbl tbody td{padding:9px 12px;border-bottom:1px solid #f3f4f6;vertical-align:middle;color:#374151}
+      ._dd-tbl tbody tr:hover td{background:#f8faff}
+    `
+    document.head.appendChild(s)
+  }
+
+  const overlay = document.createElement('div')
+  overlay.id = '_dd-overlay'
+  overlay.onclick = () => document.getElementById('_dd-panel')?.remove() || overlay.remove()
+
+  const panel = document.createElement('div')
+  panel.id = '_dd-panel'
+  panel.innerHTML = `
+    <div class="_dd-hdr" style="background:linear-gradient(135deg,${cor},${cor}cc)">
+      <div>
+        <span class="_dd-tipo">${tipoLabel}</span>
+        <div class="_dd-titulo">${categoria}</div>
+        <span class="_dd-cnt">${participantes.length} participante${participantes.length !== 1 ? 's' : ''}</span>
+      </div>
+      <button class="_dd-close" onclick="document.getElementById('_dd-panel')?.remove();document.getElementById('_dd-overlay')?.remove()">✕</button>
+    </div>
+    <div class="_dd-body">
+      <table class="_dd-tbl">
+        <thead><tr><th>Nome</th><th>Titulação</th><th>Vínculo</th><th>Disponibilidade</th><th>E-mail</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`
+
+  document.body.appendChild(overlay)
+  document.body.appendChild(panel)
 }
 
 // ── Logout ────────────────────────────────────────────────────
