@@ -230,8 +230,22 @@ async function loadChartTitulacao() {
     datasets: [{
       data: data.map(r => r.total),
       backgroundColor: chartColors(data.length),
+      borderWidth: 1,
     }]
-  }, { plugins: { legend: { position: 'bottom' } } })
+  }, {
+    plugins: {
+      legend: { position: 'bottom' },
+      datalabels: {
+        formatter: (value, ctx) => {
+          const total = ctx.dataset.data.reduce((a, b) => +a + +b, 0)
+          const pct = Math.round(value / total * 100)
+          return pct >= 5 ? pct + '%' : ''
+        },
+        color: '#fff',
+        font: { weight: 'bold', size: 11 },
+      },
+    },
+  })
 }
 
 async function loadChartSkills() {
@@ -252,7 +266,7 @@ async function loadChartSkills() {
     }]
   }, {
     indexAxis: 'y',
-    plugins: { legend: { display: false } },
+    plugins: { legend: { display: false }, datalabels: { display: false } },
     scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
   })
 }
@@ -274,7 +288,7 @@ async function loadChartFrentes() {
     }]
   }, {
     indexAxis: 'y',
-    plugins: { legend: { display: false } },
+    plugins: { legend: { display: false }, datalabels: { display: false } },
     scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
   })
 }
@@ -291,8 +305,22 @@ async function loadChartDisponibilidade() {
     datasets: [{
       data: data.map(r => r.total),
       backgroundColor: chartColors(data.length),
+      borderWidth: 1,
     }]
-  }, { plugins: { legend: { position: 'bottom' } } })
+  }, {
+    plugins: {
+      legend: { position: 'bottom' },
+      datalabels: {
+        formatter: (value, ctx) => {
+          const total = ctx.dataset.data.reduce((a, b) => +a + +b, 0)
+          const pct = Math.round(value / total * 100)
+          return pct >= 5 ? pct + '%' : ''
+        },
+        color: '#fff',
+        font: { weight: 'bold', size: 11 },
+      },
+    },
+  })
 }
 
 async function loadChartCadastrosMes() {
@@ -305,7 +333,7 @@ async function loadChartCadastrosMes() {
   if (!data || !data.length) return
 
   renderChart('chart-cadastros-mes', 'line', {
-    labels: data.map(r => new Date(r.mes).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' })),
+    labels: data.map(r => new Date(r.mes).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit', timeZone: 'UTC' })),
     datasets: [{
       label: 'Novos cadastros',
       data: data.map(r => r.total),
@@ -315,6 +343,7 @@ async function loadChartCadastrosMes() {
       fill: true,
     }]
   }, {
+    plugins: { datalabels: { display: false } },
     scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
   })
 }
@@ -526,6 +555,7 @@ function buildReportHTML({ participants, titulacao, skills, frentes, disponibili
 <meta charset="UTF-8">
 <title>Relatório Gerencial GGIA — ${dateStr}</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"><` + `/script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"><` + `/script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#eef0f3;color:#111827;font-size:11px}
@@ -705,38 +735,39 @@ ${coordSection}
 const D=${D};
 const P=['#1e3a8a','#7e22ce','#9a3412','#065f46','#b45309','#0e7490','#4d7c0f','#be185d','#374151','#92400e'];
 const BASE={responsive:true,maintainAspectRatio:false,animation:{duration:0}};
+const DLABELS={formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>+a+ +b,0);const p=Math.round(v/t*100);return p>=5?p+'%':'';},color:'#fff',font:{weight:'bold',size:10}};
 
 if(D.titulacao.length)new Chart(document.getElementById('rpt-tit'),{
   type:'doughnut',
   data:{labels:D.titulacao.map(r=>r.titulacao),datasets:[{data:D.titulacao.map(r=>+r.total),backgroundColor:P,borderWidth:1}]},
-  options:{...BASE,plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:8}}}}}
+  options:{...BASE,plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:8}}},datalabels:DLABELS}}
 });
 
 if(D.disponibilidade.length)new Chart(document.getElementById('rpt-disp'),{
   type:'pie',
   data:{labels:D.disponibilidade.map(r=>r.disponibilidade),datasets:[{data:D.disponibilidade.map(r=>+r.total),backgroundColor:P,borderWidth:1}]},
-  options:{...BASE,plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:8}}}}}
+  options:{...BASE,plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:8}}},datalabels:DLABELS}}
 });
 
 if(D.skills.length)new Chart(document.getElementById('rpt-sk'),{
   type:'bar',
   data:{labels:D.skills.map(r=>r.skill),datasets:[{data:D.skills.map(r=>+r.total),backgroundColor:'rgba(30,58,138,.75)',borderRadius:3,borderSkipped:false}]},
-  options:{...BASE,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0,font:{size:8}}},y:{ticks:{font:{size:8}}}}}
+  options:{...BASE,indexAxis:'y',plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0,font:{size:8}}},y:{ticks:{font:{size:8}}}}}
 });
 
 if(D.frentes.length)new Chart(document.getElementById('rpt-fr'),{
   type:'bar',
   data:{labels:D.frentes.map(r=>r.frente),datasets:[{data:D.frentes.map(r=>+r.total),backgroundColor:'rgba(127,29,29,.75)',borderRadius:3,borderSkipped:false}]},
-  options:{...BASE,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0,font:{size:8}}},y:{ticks:{font:{size:8}}}}}
+  options:{...BASE,indexAxis:'y',plugins:{legend:{display:false},datalabels:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0,font:{size:8}}},y:{ticks:{font:{size:8}}}}}
 });
 
 if(D.meses.length)new Chart(document.getElementById('rpt-ms'),{
   type:'line',
   data:{
-    labels:D.meses.map(r=>new Date(r.mes).toLocaleDateString('pt-BR',{month:'short',year:'2-digit'})),
+    labels:D.meses.map(r=>new Date(r.mes).toLocaleDateString('pt-BR',{month:'short',year:'2-digit',timeZone:'UTC'})),
     datasets:[{data:D.meses.map(r=>+r.total),borderColor:'#1e3a8a',backgroundColor:'rgba(30,58,138,.1)',borderWidth:2,tension:.35,fill:true,pointRadius:3,pointBackgroundColor:'#1e3a8a'}]
   },
-  options:{...BASE,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0,font:{size:8}}},x:{ticks:{font:{size:8}}}}}
+  options:{...BASE,plugins:{legend:{display:false},datalabels:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0,font:{size:8}}},x:{ticks:{font:{size:8}}}}}
 });
 <` + `/script>
 </body></html>`
