@@ -540,6 +540,37 @@ function buildReportHTML({ participants, titulacao, skills, frentes, disponibili
   const D = JSON.stringify({ titulacao, skills, frentes, disponibilidade, meses })
     .replace(/</g, '\\u003c').replace(/>/g, '\\u003e')
 
+  // ── Breakdown: categoria → lista de nomes ──────────────────
+  const _match = (field, nome) => participants
+    .filter(p => (p[field] || '').split(', ').map(s => s.trim().toLowerCase()).includes(nome.toLowerCase()))
+    .map(p => h(p.nome))
+
+  const _breakSection = (titulo, cor, items) => items.length === 0 ? '' : `
+<div class="tp pb">
+  <div class="sh"><h3 style="color:${cor}">${titulo}</h3></div>
+  <table class="dt">
+    <thead><tr>
+      <th style="width:26%">Categoria</th>
+      <th style="width:7%;text-align:center">Total</th>
+      <th>Participantes</th>
+    </tr></thead>
+    <tbody>${items.map((it, i) => `
+      <tr class="${i % 2 === 0 ? 're' : 'ro'}">
+        <td style="font-weight:700;color:${cor};vertical-align:middle">${it.nome}</td>
+        <td style="text-align:center;font-weight:900;font-size:13px;color:${cor};vertical-align:middle">${it.total}</td>
+        <td>${it.pessoas.map(n => `<span style="display:inline-block;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:2px 8px;margin:1px 3px;font-size:7.5px;white-space:nowrap">${n}</span>`).join('')}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>
+  <div class="ft"><div><strong>GGIA</strong> · ${titulo}</div><div>${dateStr}</div></div>
+</div>`
+
+  const skillsSection  = _breakSection('Participantes por Área de Expertise', '#1e3a8a',
+    skills.filter(s  => +s.total  > 0).map(s => ({ nome: s.skill,   total: +s.total,  pessoas: _match('skills',  s.skill)   })))
+
+  const frentesSection = _breakSection('Participantes por Frente de Interesse', '#7f1d1d',
+    frentes.filter(f => +f.total > 0).map(f => ({ nome: f.frente, total: +f.total, pessoas: _match('frentes', f.frente) })))
+
   const coordSection = coordenadores.length > 0 ? `
 <div class="tp pb">
   <div class="sh"><h3 style="color:#7f1d1d">Potenciais Coordenadores</h3><span class="cnt" style="background:#7f1d1d">${coordenadores.length}</span></div>
@@ -735,6 +766,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#eef0f3;color:#111827;fo
 </div>
 
 ${coordSection}
+${skillsSection}
+${frentesSection}
 
 <script>
 const D=${D};
